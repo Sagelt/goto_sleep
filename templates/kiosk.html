@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Whitenoise</title>
+
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+    <!-- Custom style -->
+    <style type="text/css">
+		.container {
+			width: 320px;
+			height: 240px;
+			background-color: black;
+			transition: background-color 3s ease;
+		}
+
+		.wakeup {
+			background-color: lime;
+		}
+
+		#time {
+			vertical-align: middle;
+			line-height: 100px;
+			font-size: 100px;
+			font-family: 'Montserrat', sans-serif;
+			position: absolute;
+			top: 50%;
+			left:50%;
+			transform: translate(-50%,-50%);
+		}
+    </style>
+
+    <!-- Custom javascript -->
+    <script type="text/javascript">
+    	$(document).ready(function() {
+			tick();
+		});
+
+      function toggle_music() {
+        $.post("http://127.0.0.1:5000/music/toggle");
+      }
+
+    	function is_time_between(start, stop, time) {
+    		if ((start < time) && (stop > time)) {
+    			return true;
+    		}
+    		return false;
+    	}
+
+    	function check_wakes(data, status, xhr) {
+    		var wake_now = false;
+    		var now = new Date();
+
+    		var wakes = JSON.parse(data);
+
+    		for (var i = wakes.length - 1; i >= 0; i--) {
+    			var start = new Date();
+    			start.setHours(wakes[i].start_hour);
+    			start.setMinutes(wakes[i].start_minute);
+
+    			var end = new Date();
+    			end.setHours(wakes[i].stop_hour);
+    			end.setMinutes(wakes[i].stop_minute);
+
+    			if (is_time_between(start, end, now)) {
+    				wake_now = true;
+    			}
+    		}
+
+    		if (wake_now) {
+    			$(".container").addClass("wakeup");
+    		} else {
+    			$(".container").removeClass("wakeup");
+    		}
+    	}
+
+    	function okay_to_wake(time) {
+    		$.get("http://127.0.0.1:5000/wakes/list", check_wakes)
+    	}
+
+    	function tick() {
+    		var now = new Date();
+
+			okay_to_wake(now);
+
+    		document.getElementById("time").innerHTML = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    		window.setTimeout("tick()", 1000);
+    	}
+    </script>
+  </head>
+  <body>
+  	<div id="root" class="container text-white" onclick="toggle_music()">
+	    <h1 id="time" class="text-center position-absolute"></h1>
+	</div>
+  </body>
+</html>

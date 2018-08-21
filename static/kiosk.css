@@ -1,0 +1,9 @@
+body {
+	animation: color_change 30s infinite alternate;
+}
+
+@keyframes color_change {
+	0% { background-color: blue; }
+	50% {background-color: green; }
+	100% { background-color: red; }
+}
