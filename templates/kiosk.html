@@ -94,8 +94,6 @@
     	function tick() {
     		var now = new Date();
 
-			okay_to_wake(now);
-
     		document.getElementById("time").innerHTML = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     		window.setTimeout("tick()", 1000);
     	}
