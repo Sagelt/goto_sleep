@@ -26,9 +26,9 @@ def toggle_music():
 
 @app.route('/wakes/list')
 def list_wakes():
-  db = TinyDB('/Users/sage/Documents/GitHub/goto_sleep/app_storage.json')
-  wakes = db.table('wakes')
-  return json.dumps(wakes.all())
+  # db = TinyDB('/Users/sage/Documents/GitHub/goto_sleep/app_storage.json')
+  # wakes = db.table('wakes')
+  return 'Success'
 
 @app.route('/wakes/create', methods=['GET', 'POST'])
 def create_wake():
